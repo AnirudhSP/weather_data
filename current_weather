@@ -1,0 +1,65 @@
+import requests
+
+def get_weather(api_key, city_name):
+    base_url = "http://api.openweathermap.org/data/2.5/weather?"
+    complete_url = f"{base_url}q={city_name}&appid={api_key}&units=metric"
+    
+    try:
+        response = requests.get(complete_url)
+        data = response.json()
+
+        if data["cod"] == 200:
+            main_data = data["main"]
+            weather_data = data["weather"][0]
+
+            temperature = main_data["temp"]
+            humidity = main_data["humidity"]
+            description = weather_data["description"].capitalize()
+
+            return description, temperature, humidity
+        else:
+            return None, None, None
+
+    except requests.exceptions.RequestException as e:
+        print("An error occurred:", e)
+        return None, None, None
+
+if __name__ == "__main__":
+    # Replace 'YOUR_API_KEY' with your actual OpenWeatherMap API key.
+    api_key = "1438ac9ff3edc2e3fdd245d0914d2871"
+    city_name = input("Enter the city name: ")
+    print("***********Welcome to Weather Checker!************")
+    
+    while True:
+        print("\nWhat would you like to check?")
+        print("1. Weather condition")
+        print("2. Temperature")
+        print("3. Humidity")
+        print("0. Exit")
+        choice = input("Enter your choice: ")
+        
+        if choice == "1":
+            description, _, _ = get_weather(api_key, city_name)
+            if description:
+                print(f"Weather in {city_name}: {description}")
+            else:
+                print("City not found or API error.")
+        elif choice == "2":
+            _, temperature, _ = get_weather(api_key, city_name)
+            if temperature is not None:
+                print(f"Temperature in {city_name}: {temperature}°C")
+                print(f"Temperature in {city_name}: {temperature * 9/5 + 32}°F")
+            else:
+                print("City not found or API error.")
+        elif choice == "3":
+            _, _, humidity = get_weather(api_key, city_name)
+            if humidity is not None:
+                print(f"Humidity in {city_name}: {humidity}%")
+            else:
+                print("City not found or API error.")
+        elif choice == "0":
+            print("Exiting Weather Checker.")
+            print("Thankyou!.. Have a wonderful day....")
+            break
+        else:
+            print("Invalid choice. Please enter a valid option.")
